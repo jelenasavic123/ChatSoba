@@ -318,7 +318,8 @@ button {
     </style>
 </head>
 <body>
-
+ <!-- Ostali sadržaji stranice -->
+    <button onclick="notifyNewMessage()">Simuliraj novu poruku</button> <!-- Dodatak za testiranje -->
     <div class="container">
         <div id="login-screen">
             <h1>Prijava</h1>
@@ -767,6 +768,12 @@ function loadOnlineUsers() {
         });
     });
 }
+
+            function notifyNewMessage() {
+            if (typeof Android !== 'undefined') {
+                Android.showNotification('Nova poruka', 'Imate novu poruku!');
+            }
+        }
 
 </script>
 
