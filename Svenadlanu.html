@@ -164,7 +164,7 @@ button {
     color: white;
     border: none;
     border-radius: 4px;
-    font-size: 0.6em;
+    font-size: 0.em;
     position: absolute; /* Ostavite ako želite da budu u određenom delu roditelja */
     right: 4px;
     bottom: 4px;
@@ -204,6 +204,11 @@ button {
     flex: 1;
     overflow-y: auto;
 
+}
+
+.container { /* Zamena sa klasom ili ID-jem roditeljskog elementa */
+    position: relative; /* Omogućava pozicioniranje unutar ovog elementa */
+    z-index: 1; /* Osigurava da je kontejner iznad drugih elemenata */
 }
 #message-input-container {
     position: fixed;
