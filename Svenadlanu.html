@@ -318,9 +318,6 @@ button {
     </style>
 </head>
 <body>
-<div id="notification" style="display: none; position: fixed; bottom: 20px; right: 20px; background-color: yellow; padding: 10px; border-radius: 5px;">
-    Nova poruka!
-</div>
 
     <div class="container">
         <div id="login-screen">
@@ -770,73 +767,6 @@ function loadOnlineUsers() {
         });
     });
 }
-
-            function notifyNewMessage() {
-            if (typeof Android !== 'undefined') {
-                Android.showNotification('Nova poruka', 'Imate novu poruku!');
-            }
-        }
-// Funkcija za prikaz obaveštenja
-function showNotification() {
-    const notification = document.getElementById('notification');
-    notification.style.display = 'block';
-    setTimeout(() => {
-        notification.style.display = 'none';
-    }, 3000); // Obaveštenje se prikazuje 3 sekunde
-}
-
-// Uklonite prethodni deo koda za slanje poruka i zamenite ga ovim:
-sendBtn.addEventListener('click', () => {
-    const message = messageInput.value.trim();
-    if (message === '') return;
-
-    const username = localStorage.getItem('username');
-    const avatar = selectedAvatar || 'default-avatar.png';
-
-    const messageData = {
-        username: username,
-        avatar: avatar,
-        text: message,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        replyTo: replyToMessage ? replyToMessage : null
-    };
-
-    // Sačuvajte poruku u Firestore
-    db.collection('messages').add(messageData)
-        .then(() => {
-            messageInput.value = '';
-            replyToMessage = null;
-            showNotification(); // Pozovite funkciju za prikaz obaveštenja
-        })
-        .catch((error) => {
-            console.error('Error sending message: ', error);
-        });
-});
-
-// U delu za učitavanje poruka dodajte obaveštenje
-db.collection('messages').orderBy('timestamp').onSnapshot(snapshot => {
-    chatBox.innerHTML = '';
-    snapshot.forEach(doc => {
-        const data = doc.data();
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('message');
-
-        if (data.avatar) {
-            const avatarImg = document.createElement('img');
-            avatarImg.src = data.avatar;
-            messageDiv.appendChild(avatarImg);
-        }
-
-        const messageText = document.createElement('div');
-        messageText.textContent = `${data.username}: ${data.text}`;
-        messageDiv.appendChild(messageText);
-
-        chatBox.appendChild(messageDiv);
-    });
-    showNotification(); // Prikaz obaveštenja kada se učitaju nove poruke
-});
-
-    
 
 </script>
 
