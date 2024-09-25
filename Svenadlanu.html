@@ -252,7 +252,7 @@ button {
 }
 
 #message-input {
-    width: 70%; /* Povećajte širinu inputa za poruke */
+    width: 75%; /* Povećajte širinu inputa za poruke */
     padding: 7px;
     font-size: 13px;
     border: 1px solid #ccc;
@@ -266,9 +266,9 @@ button {
     color: white;
     border: none;
     border-radius: 4px;
-    font-size: 8px;
+    font-size: 10px;
     position: absolute; /* Apsolutno pozicioniranje */
-    right: 35px; /* Postavlja dugme 10px od desne strane */
+    right: 25px; /* Postavlja dugme 10px od desne strane */
     top: 10px; /* Ako želiš da bude bliže vrhu */
 }
 
@@ -416,197 +416,195 @@ button {
     <!-- Firebase Firestore -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-<script>
-    // Firebase Configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyAcp6ogJFrSnw2U6kTW0isDtSuWR7i20bs",
-        authDomain: "chat-4a2d6.firebaseapp.com",
-        projectId: "chat-4a2d6",
-        storageBucket: "chat-4a2d6.appspot.com",
-        messagingSenderId: "1045553997806",
-        appId: "1:1045553997806:web:bdffccdb2bd9f3bb9510ff",
-        measurementId: "G-X0564DDDLZ"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    let selectedAvatar = '';
-    let replyToMessage = null;
-
-    const loginScreen = document.getElementById('login-screen');
-    const chatScreen = document.getElementById('chat-screen');
-    const loginBtn = document.getElementById('login-btn');
-    const messageInput = document.getElementById('message-input');
-    const chatBox = document.getElementById('chat-box');
-    const sendBtn = document.getElementById('send-btn');
-    const userDisplay = document.getElementById('user-display');
-    const logoutBtn = document.getElementById('logout-btn');
-    const avatarsContainer = document.getElementById('avatars-container');
-    const avatarModal = document.getElementById('avatar-modal');
-    const closeModal = document.getElementById('close-modal');
-
-    loginBtn.addEventListener('click', () => {
-        const username = document.getElementById('username').value.trim();
-        if (username) {
-            localStorage.setItem('username', username);
-            loginScreen.style.display = 'none';
-            avatarModal.style.display = 'flex'; // Show avatar selection modal
-        }
-    });
-
-    avatarsContainer.addEventListener('click', (event) => {
-        if (event.target.classList.contains('avatar')) {
-            selectedAvatar = event.target.getAttribute('data-avatar');
-            localStorage.setItem('avatar', selectedAvatar); // Save selected avatar
-            avatarModal.style.display = 'none'; // Hide avatar modal
-            chatScreen.style.display = 'block'; // Show chat screen
-            userDisplay.textContent = `Korisnik: ${localStorage.getItem('username')}`;
-        }
-    });
-
-    closeModal.addEventListener('click', () => {
-        avatarModal.style.display = 'none'; // Hide avatar modal
-    });
-
-    sendBtn.addEventListener('click', () => {
-        const message = messageInput.value.trim();
-        if (message === '') return;
-
-        const username = localStorage.getItem('username');
-        const avatar = selectedAvatar || 'default-avatar.png'; // Use selected avatar or default avatar
-
-        const messageData = {
-            username: username,
-            avatar: avatar,
-            text: message,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            replyTo: replyToMessage ? replyToMessage : null
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcp6ogJFrSnw2U6kTW0isDtSuWR7i20bs",
+            authDomain: "chat-4a2d6.firebaseapp.com",
+            projectId: "chat-4a2d6",
+            storageBucket: "chat-4a2d6.appspot.com",
+            messagingSenderId: "1045553997806",
+            appId: "1:1045553997806:web:bdffccdb2bd9f3bb9510ff",
+            measurementId: "G-X0564DDDLZ"
         };
 
-        // Save message to Firestore
-        db.collection('messages').add(messageData)
-            .then(() => {
-                messageInput.value = '';
-                replyToMessage = null;
-            })
-            .catch((error) => {
-                console.error('Error sending message: ', error);
-            });
-    });
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-    // Load messages from Firestore
-    function renderMessages() {
-        db.collection('messages').orderBy('timestamp').onSnapshot(snapshot => {
-            chatBox.innerHTML = '';
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const messageDiv = document.createElement('div');
-                messageDiv.classList.add('message');
+        let selectedAvatar = '';
+        let replyToMessage = null;
 
-                if (data.avatar) {
-                    const avatarImg = document.createElement('img');
-                    avatarImg.src = data.avatar;
-                    avatarImg.classList.add('message-avatar');
-                    messageDiv.appendChild(avatarImg);
-                }
+        const loginScreen = document.getElementById('login-screen');
+        const chatScreen = document.getElementById('chat-screen');
+        const loginBtn = document.getElementById('login-btn');
+        const messageInput = document.getElementById('message-input');
+        const chatBox = document.getElementById('chat-box');
+        const sendBtn = document.getElementById('send-btn');
+        const userDisplay = document.getElementById('user-display');
+        const logoutBtn = document.getElementById('logout-btn');
+        const avatarsContainer = document.getElementById('avatars-container');
+        const avatarModal = document.getElementById('avatar-modal');
+        const closeModal = document.getElementById('close-modal');
 
-                const messageHeader = document.createElement('div');
-                messageHeader.classList.add('message-header');
-
-                const messageUser = document.createElement('span');
-                messageUser.classList.add('message-user');
-                messageUser.textContent = data.username;
-                messageHeader.appendChild(messageUser);
-
-                const messageTimestamp = document.createElement('span');
-                messageTimestamp.classList.add('message-timestamp');
-                messageTimestamp.textContent = data.timestamp ? data.timestamp.toDate().toLocaleTimeString() : '';
-                messageHeader.appendChild(messageTimestamp);
-
-                messageDiv.appendChild(messageHeader);
-
-                const messageText = document.createElement('div');
-                messageText.textContent = data.text;
-                messageDiv.appendChild(messageText);
-
-                if (data.replyTo) {
-                    db.collection('messages').doc(data.replyTo).get().then(replyDoc => {
-                        const replyData = replyDoc.data();
-                        if (replyData) {
-                            const replyBox = document.createElement('div');
-                            replyBox.classList.add('reply-box');
-
-                            const replyInfo = document.createElement('div');
-                            replyInfo.classList.add('reply-info');
-                            if (replyData.avatar) {
-                                const replyAvatar = document.createElement('img');
-                                replyAvatar.src = replyData.avatar;
-                                replyInfo.appendChild(replyAvatar);
-                            }
-                            const replyUser = document.createElement('span');
-                            replyUser.textContent = replyData.username;
-                            replyInfo.appendChild(replyUser);
-                            replyBox.appendChild(replyInfo);
-
-                            const replyText = document.createElement('div');
-                            replyText.classList.add('reply-text');
-                            replyText.textContent = replyData.text;
-                            replyBox.appendChild(replyText);
-
-                            messageDiv.appendChild(replyBox);
-                        }
-                    });
-                }
-
-                const replyBtn = document.createElement('button');
-                replyBtn.textContent = 'Odgovori';
-                replyBtn.classList.add('reply-btn');
-                replyBtn.addEventListener('click', () => {
-                    replyToMessage = doc.id;
-                    messageInput.focus();  // Automatically focus the message input field
-                });
-                messageDiv.appendChild(replyBtn);
-
-                if (localStorage.getItem('username') === data.username) {
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.textContent = 'Obriši';
-                    deleteBtn.classList.add('delete-btn');
-                    deleteBtn.addEventListener('click', () => {
-                        db.collection('messages').doc(doc.id).delete();
-                    });
-                    messageDiv.appendChild(deleteBtn);
-                }
-
-                chatBox.appendChild(messageDiv);
-            });
+        loginBtn.addEventListener('click', () => {
+            const username = document.getElementById('username').value.trim();
+            if (username) {
+                localStorage.setItem('username', username);
+                loginScreen.style.display = 'none';
+                avatarModal.style.display = 'flex'; // Show avatar selection modal
+            }
         });
-    }
 
-    logoutBtn.addEventListener('click', () => {
-        localStorage.removeItem('username');
-        localStorage.removeItem('avatar');
-        chatScreen.style.display = 'none';
-        loginScreen.style.display = 'block';
-    });
+        avatarsContainer.addEventListener('click', (event) => {
+            if (event.target.classList.contains('avatar')) {
+                selectedAvatar = event.target.getAttribute('data-avatar');
+                localStorage.setItem('avatar', selectedAvatar); // Save selected avatar
+                avatarModal.style.display = 'none'; // Hide avatar modal
+                chatScreen.style.display = 'block'; // Show chat screen
+                userDisplay.textContent = `Korisnik: ${localStorage.getItem('username')}`;
+            }
+        });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const savedUsername = localStorage.getItem('username');
-        const savedAvatar = localStorage.getItem('avatar');
+        closeModal.addEventListener('click', () => {
+            avatarModal.style.display = 'none'; // Hide avatar modal
+        });
 
-        if (savedUsername) {
-            selectedAvatar = savedAvatar || 'default-avatar.png';
-            loginScreen.style.display = 'none';
-            chatScreen.style.display = 'block';
-            userDisplay.textContent = `Korisnik: ${savedUsername}`;
-            renderMessages();
-        } else {
-            loginScreen.style.display = 'block';
+        sendBtn.addEventListener('click', () => {
+            const message = messageInput.value.trim();
+            if (message === '') return;
+
+            const username = localStorage.getItem('username');
+            const avatar = selectedAvatar || 'default-avatar.png'; // Use selected avatar or default avatar
+
+            const messageData = {
+                username: username,
+                avatar: avatar,
+                text: message,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                replyTo: replyToMessage ? replyToMessage : null
+            };
+
+            // Save message to Firestore
+            db.collection('messages').add(messageData)
+                .then(() => {
+                    messageInput.value = '';
+                    replyToMessage = null;
+                })
+                .catch((error) => {
+                    console.error('Error sending message: ', error);
+                });
+        });
+
+        // Load messages from Firestore
+        function renderMessages() {
+            db.collection('messages').orderBy('timestamp').onSnapshot(snapshot => {
+                chatBox.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const messageDiv = document.createElement('div');
+                    messageDiv.classList.add('message');
+
+                    if (data.avatar) {
+                        const avatarImg = document.createElement('img');
+                        avatarImg.src = data.avatar;
+                        avatarImg.classList.add('message-avatar');
+                        messageDiv.appendChild(avatarImg);
+                    }
+
+                    const messageHeader = document.createElement('div');
+                    messageHeader.classList.add('message-header');
+
+                    const messageUser = document.createElement('span');
+                    messageUser.classList.add('message-user');
+                    messageUser.textContent = data.username;
+                    messageHeader.appendChild(messageUser);
+
+                    const messageTimestamp = document.createElement('span');
+                    messageTimestamp.classList.add('message-timestamp');
+                    messageTimestamp.textContent = data.timestamp ? data.timestamp.toDate().toLocaleTimeString() : '';
+                    messageHeader.appendChild(messageTimestamp);
+
+                    messageDiv.appendChild(messageHeader);
+
+                    const messageText = document.createElement('div');
+                    messageText.textContent = data.text;
+                    messageDiv.appendChild(messageText);
+
+                    if (data.replyTo) {
+                        db.collection('messages').doc(data.replyTo).get().then(replyDoc => {
+                            const replyData = replyDoc.data();
+                            if (replyData) {
+                                const replyBox = document.createElement('div');
+                                replyBox.classList.add('reply-box');
+
+                                const replyInfo = document.createElement('div');
+                                replyInfo.classList.add('reply-info');
+                                if (replyData.avatar) {
+                                    const replyAvatar = document.createElement('img');
+                                    replyAvatar.src = replyData.avatar;
+                                    replyInfo.appendChild(replyAvatar);
+                                }
+                                const replyUser = document.createElement('span');
+                                replyUser.textContent = replyData.username;
+                                replyInfo.appendChild(replyUser);
+                                replyBox.appendChild(replyInfo);
+
+                                const replyText = document.createElement('div');
+                                replyText.classList.add('reply-text');
+                                replyText.textContent = replyData.text;
+                                replyBox.appendChild(replyText);
+
+                                messageDiv.appendChild(replyBox);
+                            }
+                        });
+                    }
+
+                    const replyBtn = document.createElement('button');
+                    replyBtn.textContent = 'Odgovori';
+                    replyBtn.classList.add('reply-btn');
+                    replyBtn.addEventListener('click', () => {
+                        replyToMessage = doc.id;
+                    });
+                    messageDiv.appendChild(replyBtn);
+
+                    if (localStorage.getItem('username') === data.username) {
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.textContent = 'Obriši';
+                        deleteBtn.classList.add('delete-btn');
+                        deleteBtn.addEventListener('click', () => {
+                            db.collection('messages').doc(doc.id).delete();
+                        });
+                        messageDiv.appendChild(deleteBtn);
+                    }
+
+                    chatBox.appendChild(messageDiv);
+                });
+            });
         }
-    });
-</script>
 
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('username');
+            localStorage.removeItem('avatar');
+            chatScreen.style.display = 'none';
+            loginScreen.style.display = 'block';
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedUsername = localStorage.getItem('username');
+            const savedAvatar = localStorage.getItem('avatar');
+
+            if (savedUsername) {
+                selectedAvatar = savedAvatar || 'default-avatar.png';
+                loginScreen.style.display = 'none';
+                chatScreen.style.display = 'block';
+                userDisplay.textContent = `Korisnik: ${savedUsername}`;
+                renderMessages();
+            } else {
+                loginScreen.style.display = 'block';
+            }
+        });
+    </script>
 
 </body>
 </html>
