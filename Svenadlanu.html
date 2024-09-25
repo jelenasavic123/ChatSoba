@@ -366,30 +366,32 @@ button {
 </head>
 <body>
 
-    <div class="container">
-        <div id="login-screen">
-            <h1>Prijava</h1>
-            <input type="text" id="username" placeholder="Unesite svoje ime">
-                 <button id="login-btn">Prijavi se</button>
-                        <div id="welcome-text">         
-        <p>Nakon što se prijavite, bićete u mogućnosti da prijavite eventualne greške i neispravne epizode. Takođe, možete se povezati sa drugim korisnicima putem našeg chat sistema za bilo kakva pitanja ili diskusije u vezi sa aplikacijom.</p>
-    </div>
-           
-            <input type="file" id="avatar-upload" accept="image/*">
-            <img id="uploaded-avatar" src="" alt="Avatar">
+<div class="container">
+    <div id="login-screen">
+        <h1>Prijava</h1>
+        <input type="text" id="username" placeholder="Unesite svoje ime">
+        <button id="login-btn">Prijavi se</button>
+        
+        <div id="welcome-text">         
+            <p>Nakon što se prijavite, bićete u mogućnosti da prijavite eventualne greške i neispravne epizode. Takođe, možete se povezati sa drugim korisnicima putem našeg chat sistema za bilo kakva pitanja ili diskusije u vezi sa aplikacijom.</p>
         </div>
-        <div id="chat-screen">
-            <div id="chat-container">
-                <div id="chat-box"></div>
-                <div id="message-input-container">
-                    <input type="text" id="message-input" placeholder="Unesite poruku...">
-                    <button id="send-btn">Pošalji</button>
-                          <button id="logout-btn">Odjavi se</button>
-                    <!-- HTML for delete button in each message -->
-                </div>
+        
+        <input type="file" id="avatar-upload" accept="image/*">
+        <img id="uploaded-avatar" src="" alt="Avatar">
+    </div>
+    <div id="chat-screen">
+        <div id="chat-container">
+            <div id="chat-box"></div>
+            <div id="message-input-container">
+                <input type="text" id="message-input" placeholder="Unesite poruku...">
+                <button id="send-btn">Pošalji</button>
+                <button id="logout-btn">Odjavi se</button>
+                <!-- HTML for delete button in each message -->
             </div>
         </div>
     </div>
+</div>
+
 
     <!-- Modal for avatar selection -->
     <div id="avatar-modal">
